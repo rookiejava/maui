@@ -34,6 +34,10 @@
 
     <UsingTask
         AssemblyFile="$(_ResizetizerTaskAssemblyName)"
+        TaskName="Microsoft.Maui.Resizetizer.TizenSplashUpdator" />
+
+    <UsingTask
+        AssemblyFile="$(_ResizetizerTaskAssemblyName)"
         TaskName="Microsoft.Maui.Resizetizer.GenerateSplashAssets" />
 
     <UsingTask
@@ -73,6 +77,7 @@
         <_ResizetizerIsAndroidApp Condition="'$(TargetFrameworkIdentifier)' == 'MonoAndroid' And '$(AndroidApplication)' == 'True'">True</_ResizetizerIsAndroidApp>
         <_ResizetizerIsiOSApp Condition="'$(TargetFrameworkIdentifier)' == 'Xamarin.iOS' And ('$(OutputType)' == 'Exe' Or '$(IsAppExtension)' == 'True')">True</_ResizetizerIsiOSApp>
         <_ResizetizerIsUWPApp Condition="'$(TargetPlatformIdentifier)' == 'UAP' And '$(OutputType)' == 'AppContainerExe'">True</_ResizetizerIsUWPApp>
+        <_ResizetizerIsTizenApp Condition="'$(TargetFrameworkIdentifier)' == 'Tizen'">True</_ResizetizerIsTizenApp>
         <_ResizetizerIsWPFApp Condition="'$(IsApplication)' == 'True' And '$(NuGetRuntimeIdentifier)' == 'win' And '$(TargetPlatformIdentifier)' == 'Windows'">True</_ResizetizerIsWPFApp>
         <_ResizetizerIsWinUIApp>False</_ResizetizerIsWinUIApp>
     </PropertyGroup>
@@ -82,11 +87,12 @@
         <_ResizetizerIsAndroidApp Condition="'$(TargetPlatformIdentifier)' == 'android' And '$(AndroidApplication)' == 'True'">True</_ResizetizerIsAndroidApp>
         <_ResizetizerIsiOSApp Condition="('$(TargetPlatformIdentifier)' == 'ios' Or '$(TargetPlatformIdentifier)' == 'maccatalyst') And ('$(OutputType)' == 'Exe' Or '$(IsAppExtension)' == 'True')">True</_ResizetizerIsiOSApp>
         <_ResizetizerIsUWPApp Condition="'$(TargetPlatformIdentifier)'=='UAP' And '$(OutputType)' == 'AppContainerExe'">True</_ResizetizerIsUWPApp>
+        <_ResizetizerIsTizenApp Condition="'$(TargetPlatformIdentifier)'=='tizen'">True</_ResizetizerIsTizenApp>
         <_ResizetizerIsWPFApp Condition="'$(IsApplication)' == 'True' And '$(NuGetRuntimeIdentifier)' == 'win' And '$(TargetPlatformIdentifier)'=='Windows'">True</_ResizetizerIsWPFApp>
         <_ResizetizerIsWinUIApp Condition="'$(ProjectReunionWinUI)'=='True' And '$(TargetPlatformIdentifier)'=='Windows' And '$(OutputType)' == 'WinExe'">True</_ResizetizerIsWinUIApp>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(_ResizetizerIsAndroidApp)' == 'True' Or '$(_ResizetizerIsiOSApp)' == 'True' Or '$(_ResizetizerIsUWPApp)' == 'True' Or '$(_ResizetizerIsWPFApp)' == 'True' Or '$(_ResizetizerIsWinUIApp)' == 'True'">
+    <PropertyGroup Condition="'$(_ResizetizerIsAndroidApp)' == 'True' Or '$(_ResizetizerIsiOSApp)' == 'True' Or '$(_ResizetizerIsUWPApp)' == 'True' Or '$(_ResizetizerIsWPFApp)' == 'True' Or '$(_ResizetizerIsWinUIApp)' == 'True' Or '$(_ResizetizerIsTizenApp)' == 'True'">
         <_ResizetizerIsCompatibleApp>True</_ResizetizerIsCompatibleApp>
 
         <ResizetizeDependsOnTargets>
@@ -172,10 +178,29 @@
         </ProcessMauiFontsBeforeTargets>
     </PropertyGroup>
 
+    <!-- Tizen -->
+    <PropertyGroup Condition="'$(_ResizetizerIsTizenApp)' == 'True'">
+        <ResizetizerPlatformType>tizen</ResizetizerPlatformType>
+
+        <ResizetizeBeforeTargets>
+            $(ResizetizeBeforeTargets);
+            PrepareResources;
+        </ResizetizeBeforeTargets>
+
+        <ResizetizeAfterTargets>
+            $(ResizetizeAfterTargets);
+            ResizetizeCollectItems;
+        </ResizetizeAfterTargets>
+
+        <ProcessMauiFontsAfterTargets>
+            $(ProcessMauiFontsAfterTargets);
+            ResizetizeCollectItems;
+        </ProcessMauiFontsAfterTargets>
+    </PropertyGroup>
+
     <!-- Finds absolute paths to any MauiImage in this project -->
     <!-- App head projects will invoke this target on their project references to collect images -->
     <Target Name="GetMauiItems" Outputs="@(ExportedMauiItem)">
-
         <ItemGroup>
             <MauiItem Include="@(MauiImage)" ItemGroupName="MauiImage" Condition="'%(MauiImage.ForegroundFile)' == ''" />
             <MauiItem Include="@(MauiImage)" ItemGroupName="MauiImage" Condition="'%(MauiImage.ForegroundFile)' != ''" ForegroundFile="$([System.IO.Path]::GetFullPath('%(MauiImage.ForegroundFile)'))" />
@@ -265,14 +290,19 @@
             <_MauiAssetFolderName>Assets</_MauiAssetFolderName>
             <_MauiAssetItemMetadata>TargetPath</_MauiAssetItemMetadata>
         </PropertyGroup>
+        <PropertyGroup Condition="'$(_ResizetizerIsTizenApp)' == 'True'">
+            <_MauiAssetFolderName>res</_MauiAssetFolderName>
+            <_MauiAssetItemMetadata>TizenTpkFileName</_MauiAssetItemMetadata>
+        </PropertyGroup>
         <GetMauiAssetPath
             ProjectDirectory="$(MSBuildProjectDirectory)"
             FolderName="$(_MauiAssetFolderName)"
             ItemMetadata="$(_MauiAssetItemMetadata)"
             Input="@(MauiAsset)">
-            <Output ItemName="AndroidAsset"          TaskParameter="Output" Condition="'$(_ResizetizerIsAndroidApp)' == 'True'" />
-            <Output ItemName="Content"               TaskParameter="Output" Condition="'$(_ResizetizerIsiOSApp)' == 'True'" />
-            <Output ItemName="ContentWithTargetPath" TaskParameter="Output" Condition="'$(_ResizetizerIsUWPApp)' == 'True' Or '$(_ResizetizerIsWinUIApp)' == 'True'" />
+            <Output ItemName="AndroidAsset"             TaskParameter="Output" Condition="'$(_ResizetizerIsAndroidApp)' == 'True'" />
+            <Output ItemName="Content"                  TaskParameter="Output" Condition="'$(_ResizetizerIsiOSApp)' == 'True'" />
+            <Output ItemName="ContentWithTargetPath"    TaskParameter="Output" Condition="'$(_ResizetizerIsUWPApp)' == 'True' Or '$(_ResizetizerIsWinUIApp)' == 'True'" />
+            <Output ItemName="TizenTpkUserIncludeFiles" TaskParameter="Output" Condition="'$(_ResizetizerIsTizenApp)' == 'True'" />
         </GetMauiAssetPath>
     </Target>
 
@@ -327,6 +357,11 @@
                 <TargetPath>Assets\%(_MauiSplashAssets.Filename)%(_MauiSplashAssets.Extension)</TargetPath>
             </ContentWithTargetPath>
             <FileWrites Include="@(_MauiSplashAssets)" />
+        </ItemGroup>
+
+      <!-- Tizen -->
+        <ItemGroup Condition="'$(_ResizetizerIsTizenApp)' == 'True'">
+            <MauiImage Include="@(MauiSplashScreen)" />
         </ItemGroup>
 
         <!-- Stamp file for Outputs -->
@@ -412,6 +447,11 @@
 
         </ItemGroup>
 
+        <!-- Tizen -->
+        <ItemGroup Condition="'$(_ResizetizerIsTizenApp)' == 'True'">
+            <TizenTpkUserIncludeFiles Include="$(IntermediateOutputPath)sp\fonts\*" TizenTpkSubDir="res\fonts\" />
+        </ItemGroup>
+
         <!-- iOS Only -->
         <!-- If on Windows, using build host, copy the files over to build server host too -->
         <ItemGroup Condition="'$(BuildSessionId)' != '' And '$(_ResizetizerIsiOSApp)' == 'True' And '$(IsMacEnabled)'=='true'">
@@ -453,6 +493,12 @@
             InputsFile="$(_ResizetizerInputsFile)"
             Images="@(MauiImage->Distinct())">
         </ResizetizeImages>
+
+        <!-- Tizen - Move splash images to a specific location -->
+        <TizenSplashUpdator
+            Condition="'$(_ResizetizerIsTizenApp)' == 'True'"
+            IntermediateOutputPath="$(ResizetizerIntermediateOutputPath)"
+            MauiSplashScreen="@(MauiSplashScreen)" />
 
         <ItemGroup>
             <!-- Get Images that were generated -->
@@ -520,6 +566,20 @@
                 <LogicalName>%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</LogicalName>
                 <Link>%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</Link>
             </Resource>
+            <FileWrites Include="@(_ResizetizerCollectedImages)" />
+        </ItemGroup>
+
+        <!-- Tizen -->
+        <PropertyGroup>
+            <ResizetizerIntermediateOutputAbsolutePath>$([System.IO.Path]::GetFullPath('$(ResizetizerIntermediateOutputPath)'))</ResizetizerIntermediateOutputAbsolutePath>
+        </PropertyGroup>
+        <ItemGroup Condition="'$(_ResizetizerIsTizenApp)' == 'True'">
+            <TizenTpkUserIncludeFiles Include="$(ResizetizerIntermediateOutputAbsolutePath)res\res.xml" TizenTpkSubDir="res\" />
+            <FileWrites Include="$(ResizetizerIntermediateOutputAbsolutePath)res\res.xml)" />
+
+            <TizenTpkUserIncludeFiles Include="@(_ResizetizerCollectedImages)">
+                <TizenTpkSubDir>$([MSBuild]::MakeRelative($(ResizetizerIntermediateOutputAbsolutePath), $([System.IO.Path]::GetFullPath('%(_ResizetizerCollectedImages.RelativeDir)'))))</TizenTpkSubDir>
+            </TizenTpkUserIncludeFiles>
             <FileWrites Include="@(_ResizetizerCollectedImages)" />
         </ItemGroup>
 
