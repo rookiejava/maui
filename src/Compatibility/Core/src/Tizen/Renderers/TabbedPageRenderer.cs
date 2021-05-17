@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using ElmSharp;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific;
+using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
 using EColor = ElmSharp.Color;
 using ERect = ElmSharp.Rect;
 using EToolbarItem = ElmSharp.ToolbarItem;
@@ -210,10 +210,10 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateBarBackgroundColor(bool initialize)
 		{
-			if (initialize && Element.BarBackgroundColor.IsDefault)
+			if (initialize && Element.BarBackgroundColor == null)
 				return;
 
-			EColor bgColor = Element.BarBackgroundColor.ToNative();
+			EColor bgColor = Element.BarBackgroundColor.ToNativeEFL();
 			_toolbar.BackgroundColor = bgColor;
 			foreach (EToolbarItem item in _itemToItemPage.Keys)
 			{
@@ -223,34 +223,34 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateBarTextColor(bool initialize)
 		{
-			if (initialize && Element.BarTextColor.IsDefault)
+			if (initialize && Element.BarTextColor == null)
 				return;
 
 			foreach (EToolbarItem item in _itemToItemPage.Keys)
 			{
-				ApplyBarItemColors(item, BarItemColorType.Text, Element.BarTextColor.ToNative());
+				ApplyBarItemColors(item, BarItemColorType.Text, Element.BarTextColor.ToNativeEFL());
 			}
 		}
 
 		void UpdateSelectedTabColor(bool initialize)
 		{
-			if (initialize && Element.SelectedTabColor.IsDefault)
+			if (initialize && Element.SelectedTabColor == null)
 				return;
 
 			foreach (EToolbarItem item in _itemToItemPage.Keys)
 			{
-				ApplyBarItemColors(item, BarItemColorType.SelectedTab, Element.SelectedTabColor.ToNative());
+				ApplyBarItemColors(item, BarItemColorType.SelectedTab, Element.SelectedTabColor.ToNativeEFL());
 			}
 		}
 
 		void UpdateUnselectedTabColor(bool initialize)
 		{
-			if (initialize && Element.UnselectedTabColor.IsDefault)
+			if (initialize && Element.UnselectedTabColor == null)
 				return;
 
 			foreach (EToolbarItem item in _itemToItemPage.Keys)
 			{
-				ApplyBarItemColors(item, BarItemColorType.UnselectedTab, Element.UnselectedTabColor.ToNative());
+				ApplyBarItemColors(item, BarItemColorType.UnselectedTab, Element.UnselectedTabColor.ToNativeEFL());
 			}
 		}
 
@@ -322,10 +322,10 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 			_toolbarItemList.Insert(index, toolbarItem);
 			_itemToItemPage.Add(toolbarItem, newItem);
 
-			ApplyBarItemColors(toolbarItem, BarItemColorType.Background, Element.BarBackgroundColor.ToNative());
-			ApplyBarItemColors(toolbarItem, BarItemColorType.Text, Element.BarTextColor.ToNative());
-			ApplyBarItemColors(toolbarItem, BarItemColorType.SelectedTab, Element.SelectedTabColor.ToNative());
-			ApplyBarItemColors(toolbarItem, BarItemColorType.UnselectedTab, Element.UnselectedTabColor.ToNative());
+			ApplyBarItemColors(toolbarItem, BarItemColorType.Background, Element.BarBackgroundColor.ToNativeEFL());
+			ApplyBarItemColors(toolbarItem, BarItemColorType.Text, Element.BarTextColor.ToNativeEFL());
+			ApplyBarItemColors(toolbarItem, BarItemColorType.SelectedTab, Element.SelectedTabColor.ToNativeEFL());
+			ApplyBarItemColors(toolbarItem, BarItemColorType.UnselectedTab, Element.UnselectedTabColor.ToNativeEFL());
 
 			var childContent = Platform.GetOrCreateRenderer(newItem).NativeView;
 			_innerBox.PackEnd(childContent);

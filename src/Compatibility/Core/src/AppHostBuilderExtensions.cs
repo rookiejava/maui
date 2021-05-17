@@ -36,6 +36,11 @@ using TabbedPageRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.Ta
 using FlyoutPageRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.PhoneFlyoutPageRenderer;
 using RadioButtonRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.Platform.DefaultRenderer;
 using DefaultRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.Platform.DefaultRenderer;
+#elif TIZEN
+using Microsoft.Maui.Controls.Compatibility.Platform.Tizen;
+using BoxRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.BoxViewRenderer;
+using CollectionViewRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.StructuredItemsViewRenderer;
+using OpenGLViewRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.DefaultRenderer;
 #endif
 
 namespace Microsoft.Maui.Controls.Hosting
@@ -139,6 +144,35 @@ namespace Microsoft.Maui.Controls.Hosting
 						var state = new ActivationState(mauiContext);
 						Forms.Init(state);
 					}));
+#elif TIZEN
+				events.AddTizen(tizen => tizen
+					.OnPreCreate((a) =>
+					{
+						// This just gets Forms Compat bits setup with what it needs
+						// to initialize the first view. MauiContext hasn't been initialized at this point
+						// so we setup one that will look exactly the same just
+						// to make legacy Forms bits happy
+						var services = MauiApplication.Current.Services;
+						MauiContext mauiContext = new MauiContext(services, CoreUIAppContext.GetInstance(MauiApplication.Current));
+						ActivationState state = new ActivationState(mauiContext);
+						Forms.Init(state, new InitializationOptions(MauiApplication.Current) { Flags = InitializationFlags.SkipRenderers });
+					})
+					.OnCreate((a) =>
+					{
+						// This calls Init again so that the MauiContext that's part of
+						// Forms.Init matches the rest of the maui application
+						var mauiApp = MauiApplication.Current.Application;
+						if (mauiApp.Windows.Count > 0)
+						{
+							var window = mauiApp.Windows[0];
+							var mauiContext = window.Handler?.MauiContext ?? window.View.Handler?.MauiContext;
+
+							if (mauiContext != null)
+							{
+								Forms.Init(new ActivationState(mauiContext));
+							}
+						}
+					}));
 #endif
 			});
 
@@ -148,7 +182,7 @@ namespace Microsoft.Maui.Controls.Hosting
 					handlers.AddMauiControlsHandlers();
 					DependencyService.SetToInitialized();
 
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || TIZEN
 
 					handlers.TryAddCompatibilityRenderer(typeof(BoxView), typeof(BoxRenderer));
 					handlers.TryAddCompatibilityRenderer(typeof(Entry), typeof(EntryRenderer));
@@ -241,7 +275,7 @@ namespace Microsoft.Maui.Controls.Hosting
 		{
 			public void Configure(HostBuilderContext context, IServiceProvider services)
 			{
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || TIZEN
 				CompatServiceProvider.SetServiceProvider(services);
 #endif
 
