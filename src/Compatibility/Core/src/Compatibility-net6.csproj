@@ -8,6 +8,7 @@
     <AndroidRoot>Android\</AndroidRoot>
     <iOSRoot>iOS\</iOSRoot>
     <WindowsRoot>WinUI\</WindowsRoot>
+    <TizenRoot>Tizen\</TizenRoot>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -68,6 +69,13 @@
     <Compile Remove="$(iOSRoot)bin\**\*.cs" />
     <Compile Remove="$(iOSRoot)obj\**\*.cs" />
     <Compile Include="*.iOS.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetPlatformIdentifier)' == 'tizen'" >
+    <Compile Include="$(TizenRoot)**\*.cs"></Compile>
+    <EmbeddedResource Include="$(TizenRoot)Resources\*.resx" />
+    <Compile Remove="$(TizenRoot)bin\**\*.cs" />
+    <Compile Remove="$(TizenRoot)obj\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
