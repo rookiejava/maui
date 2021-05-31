@@ -42,6 +42,10 @@
     <EnableDefaultPageItems>False</EnableDefaultPageItems>
     <EnableDefaultApplicationDefinition>False</EnableDefaultApplicationDefinition>
     <_SingleProjectWindowsExcludes>$(WindowsProjectFolder)/**/.*/**</_SingleProjectWindowsExcludes>
+    <!-- Tizen -->
+    <TizenProjectFolder Condition=" '$(TizenProjectFolder)' == '' ">Tizen\</TizenProjectFolder>
+    <TizenManifest>$(TizenProjectFolder)tizen-manifest.xml</TizenManifest>
+    <TizenResourcePrefix>$(TizenProjectFolder)res</TizenResourcePrefix>
   </PropertyGroup>
 
   <!-- Removals -->
@@ -59,6 +63,9 @@
     <_MauiCompileToAdd
         Condition=" '$(TargetPlatformIdentifier)' == 'windows' and '$(WindowsProjectFolder)' != '' "
         Include="$(WindowsProjectFolder)**/*$(DefaultLanguageSourceExtension)" />
+    <_MauiCompileToAdd
+        Condition=" '$(TargetPlatformIdentifier)' == 'tizen' and '$(TizenProjectFolder)' != '' "
+        Include="$(TizenProjectFolder)**/*$(DefaultLanguageSourceExtension)" />
     <None Include="$(PlatformsProjectFolder)**/*$(DefaultLanguageSourceExtension)" Exclude="@(_MauiCompileToAdd)" />
     <Compile Remove="$(PlatformsProjectFolder)**/*$(DefaultLanguageSourceExtension)" />
     <Compile Include="@(_MauiCompileToAdd)" />

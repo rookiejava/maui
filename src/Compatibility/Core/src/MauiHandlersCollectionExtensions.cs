@@ -10,7 +10,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 		{
 			Internals.Registrar.Registered.Register(controlType, rendererType);
 
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || (__TIZEN__ || TIZEN)
 			handlersCollection.TryAddHandler(controlType, typeof(RendererToHandlerShim));
 #endif
 
@@ -21,7 +21,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 		{
 			Internals.Registrar.Registered.Register(controlType, rendererType);
 
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || (__TIZEN__ || TIZEN)
 			handlersCollection.AddHandler(controlType, typeof(RendererToHandlerShim));
 #endif
 
@@ -33,7 +33,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 		{
 			Internals.Registrar.Registered.Register(typeof(TControlType), typeof(TRenderer));
 
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || (__TIZEN__ || TIZEN) 
 			handlersCollection.AddHandler<TMauiType, RendererToHandlerShim>();
 #endif
 			return handlersCollection;

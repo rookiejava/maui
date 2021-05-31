@@ -118,4 +118,7 @@
     </Page>
   </ItemGroup>
 
+  <!-- Tizen -->
+  <ItemGroup Condition=" '$(EnableDefaultItems)' == 'true' and '$(SingleProject)' == 'true' and '$(TargetPlatformIdentifier)' == 'tizen' and '$(TizenProjectFolder)' != '' " />
+
 </Project>
