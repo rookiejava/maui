@@ -44,7 +44,7 @@
     <_SingleProjectWindowsExcludes>$(WindowsProjectFolder)/**/.*/**</_SingleProjectWindowsExcludes>
     <!-- Tizen -->
     <TizenProjectFolder Condition=" '$(TizenProjectFolder)' == '' ">Tizen\</TizenProjectFolder>
-    <TizenManifest>$(TizenProjectFolder)tizen-manifest.xml</TizenManifest>
+    <TizenManifestFile>$(TizenProjectFolder)tizen-manifest.xml</TizenManifestFile>
     <TizenResourcePrefix>$(TizenProjectFolder)res</TizenResourcePrefix>
   </PropertyGroup>
 
