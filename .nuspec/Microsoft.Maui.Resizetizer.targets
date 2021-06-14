@@ -439,10 +439,12 @@
 
         <!-- WPF -->
         <ItemGroup Condition="'$(_ResizetizerIsWPFApp)' == 'True'">
+
             <Resource Include="@(_MauiFontCopied)" Condition="'@(_MauiFontCopied)' != ''">
                 <LogicalName>$([System.IO.Path]::GetFileName(%(_MauiFontCopied.Identity)))</LogicalName>
                 <Link>$([System.IO.Path]::GetFileName(%(_MauiFontCopied.Identity)))</Link>
             </Resource>
+
         </ItemGroup>
 
         <!-- Tizen -->
@@ -495,8 +497,8 @@
         <!-- Tizen - Move splash images to a specific location -->
         <TizenSplashUpdator
             Condition="'$(_ResizetizerIsTizenApp)' == 'True'"
-            ManifestFile="$(TizenManifestFile)"
             IntermediateOutputPath="$(ResizetizerIntermediateOutputPath)"
+            ManifestFile="$(TizenManifestFile)"
             MauiSplashScreen="@(MauiSplashScreen)" />
 
         <ItemGroup>
