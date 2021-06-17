@@ -45,6 +45,9 @@ namespace Maui.Controls.Sample
 #elif WINDOWS
 					handlers.AddCompatibilityRenderer(typeof(CustomButton),
 						typeof(Microsoft.Maui.Controls.Compatibility.Platform.UWP.ButtonRenderer));
+#elif __TIZEN__
+					handlers.AddCompatibilityRenderer(typeof(CustomButton),
+						typeof(Microsoft.Maui.Controls.Compatibility.Platform.Tizen.ButtonRenderer));
 #endif
 				});
 
@@ -213,7 +216,7 @@ namespace Maui.Controls.Sample
 						.OnClosed((a, b) => LogEvent(nameof(WindowsLifecycle.OnClosed)))
 						.OnLaunched((a, b) => LogEvent(nameof(WindowsLifecycle.OnLaunched)))
 						.OnVisibilityChanged((a, b) => LogEvent(nameof(WindowsLifecycle.OnVisibilityChanged))));
-#elif __TIZEN__ || TIZEN
+#elif TIZEN
 					events.AddTizen(tizen => tizen
 						.OnAppControlReceived((a, b) => LogEvent(nameof(TizenLifecycle.OnAppControlReceived)))
 						.OnCreate((a) => LogEvent(nameof(TizenLifecycle.OnCreate)))
