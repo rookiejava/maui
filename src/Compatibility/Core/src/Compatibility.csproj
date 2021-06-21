@@ -64,7 +64,7 @@
     <EmbeddedResource Include="$(TizenRoot)Resources\*.resx" />
     <Compile Remove="$(TizenRoot)bin\**\*.cs" />
     <Compile Remove="$(TizenRoot)obj\**\*.cs" />
-    <Compile Include="RendererToHandlerShim.Tizen.cs" />
+    <Compile Include="*.Tizen.cs" />
   </ItemGroup>
 
   <ItemGroup>

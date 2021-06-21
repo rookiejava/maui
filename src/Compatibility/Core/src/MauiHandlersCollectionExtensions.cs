@@ -50,7 +50,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 		public static IMauiHandlersCollection AddCompatibilityRenderers(this IMauiHandlersCollection handlersCollection, params global::System.Reflection.Assembly[] assemblies)
 		{
 
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || TIZEN
 
 			Internals.Registrar.RegisterAll(
 				assemblies,
@@ -86,7 +86,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 		public static IImageSourceServiceCollection AddCompatibilityServices(this IImageSourceServiceCollection services, params global::System.Reflection.Assembly[] assemblies)
 		{
 
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || TIZEN
 			Internals.Registrar.RegisterAll(
 				assemblies,
 				null,
