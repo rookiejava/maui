@@ -149,33 +149,51 @@ namespace Microsoft.Maui.Controls.Hosting
 					}));
 #elif TIZEN
 				events.AddTizen(tizen => tizen
-					.OnPreCreate((a) =>
-					{
-						// This just gets Forms Compat bits setup with what it needs
-						// to initialize the first view. MauiContext hasn't been initialized at this point
-						// so we setup one that will look exactly the same just
-						// to make legacy Forms bits happy
-						var services = MauiApplication.Current.Services;
-						MauiContext mauiContext = new MauiContext(services, CoreUIAppContext.GetInstance(MauiApplication.Current));
-						ActivationState state = new ActivationState(mauiContext);
-						Forms.Init(state, new InitializationOptions(MauiApplication.Current) { Flags = InitializationFlags.SkipRenderers });
-					})
-					.OnCreate((a) =>
-					{
-						// This calls Init again so that the MauiContext that's part of
-						// Forms.Init matches the rest of the maui application
-						var mauiApp = MauiApplication.Current.Application;
-						if (mauiApp.Windows.Count > 0)
-						{
-							var window = mauiApp.Windows[0];
-							var mauiContext = window.Handler?.MauiContext ?? window.View.Handler?.MauiContext;
-
-							if (mauiContext != null)
+							.OnPreCreate((a) =>
 							{
-								Forms.Init(new ActivationState(mauiContext));
-							}
-						}
-					}));
+								// This just gets Forms Compat bits setup with what it needs
+								// to initialize the first view. MauiContext hasn't been initialized at this point
+								// so we setup one that will look exactly the same just
+								// to make legacy Forms bits happy
+								var services = MauiApplication.Current.Services;
+								MauiContext mauiContext = new MauiContext(services, CoreUIAppContext.GetInstance(MauiApplication.Current));
+								ActivationState state = new ActivationState(mauiContext);
+								var options = services.GetService<InitializationOptions>();
+
+								if (options != null)
+								{
+									options.Context = options.Context ?? MauiApplication.Current;
+									Forms.Init(state, options);
+
+									if (options.UseSkiaSharp)
+									{
+										var handlersCollection = services.GetRequiredService<IMauiHandlersServiceProvider>().GetCollection();
+
+										handlersCollection.TryAddCompatibilityRenderer(typeof(Frame),
+											typeof(Microsoft.Maui.Controls.Compatibility.Platform.Tizen.SkiaSharp.FrameRenderer));
+									}
+								}
+								else
+								{
+									Forms.Init(state, new InitializationOptions(MauiApplication.Current) { Flags = InitializationFlags.SkipRenderers });
+								}
+							})
+							.OnCreate((a) =>
+							{
+								// This calls Init again so that the MauiContext that's part of
+								// Forms.Init matches the rest of the maui application
+								var mauiApp = MauiApplication.Current.Application;
+								if (mauiApp.Windows.Count > 0)
+								{
+									var window = mauiApp.Windows[0];
+									var mauiContext = window.Handler?.MauiContext ?? window.View.Handler?.MauiContext;
+
+									if (mauiContext != null)
+									{
+										Forms.Init(new ActivationState(mauiContext));
+									}
+								}
+							}));
 #endif
 			});
 

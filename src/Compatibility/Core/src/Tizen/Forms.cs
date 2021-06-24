@@ -53,6 +53,9 @@ namespace Microsoft.Maui.Controls.Compatibility
 			public string Name;
 			public ExportEffectAttribute[] Effects;
 		}
+		public InitializationOptions()
+		{
+		}
 
 		public InitializationOptions(CoreApplication application)
 		{
@@ -497,6 +500,14 @@ namespace Microsoft.Maui.Controls.Compatibility
 			else
 			{
 				Device.SetIdiom(TargetIdiom.Unsupported);
+			}
+
+			if (options != null)
+			{
+				s_platformType = options.PlatformType;
+				s_useMessagingCenter = options.UseMessagingCenter;
+				UseSkiaSharp = options.UseSkiaSharp;
+				UseFastLayout = options.UseFastLayout;
 			}
 
 			Application.AccentColor = GetAccentColor(profile);
