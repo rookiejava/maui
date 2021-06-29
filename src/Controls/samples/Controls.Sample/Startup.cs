@@ -85,14 +85,14 @@ namespace Maui.Controls.Sample
 				{
 					services.AddLogging(logging =>
 					{
-#if WINDOWS
+#if WINDOWS || TIZEN
 						logging.AddDebug();
 #else
 						logging.AddConsole();
 #endif
 					});
 #if TIZEN
-					services.AddTransient<InitializationOptions>((_) => {
+					services.AddTransient((_) => {
 						var option = new InitializationOptions
 						{
 							DisplayResolutionUnit = DisplayResolutionUnit.DP(true),

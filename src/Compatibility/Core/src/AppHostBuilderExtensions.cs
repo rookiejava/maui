@@ -166,6 +166,24 @@ namespace Microsoft.Maui.Controls.Hosting
 									options.Context = options.Context ?? MauiApplication.Current;
 									Forms.Init(state, options);
 
+									var unit = options.DisplayResolutionUnit;
+									if (unit != null)
+									{
+										if (unit.UseDP)
+										{
+											mauiContext!.Context!.DisplayResolutionUnit = unit.UseDeviceScale ? Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.DeviceScaledDP : Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.DP;
+										}
+										else if (unit.UseVP)
+										{
+											mauiContext!.Context!.DisplayResolutionUnit = Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.VP;
+											mauiContext!.Context!.ViewportWidth = unit.ViewportWidth;
+										}
+										else
+										{
+											mauiContext!.Context!.DisplayResolutionUnit = unit.UseDeviceScale ? Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.DeviceScaledPixel : Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.Pixel;
+										}
+									}
+
 									if (options.UseSkiaSharp)
 									{
 										var handlersCollection = services.GetRequiredService<IMauiHandlersServiceProvider>().GetCollection();
