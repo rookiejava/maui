@@ -38,6 +38,7 @@ using RadioButtonRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.P
 using DefaultRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.Platform.DefaultRenderer;
 #elif TIZEN
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen;
+using Microsoft.Maui.Graphics.Skia;
 using BoxRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.BoxViewRenderer;
 using CollectionViewRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.StructuredItemsViewRenderer;
 using OpenGLViewRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.DefaultRenderer;
@@ -177,6 +178,8 @@ namespace Microsoft.Maui.Controls.Hosting
 								{
 									Forms.Init(state, new InitializationOptions(MauiApplication.Current) { Flags = InitializationFlags.SkipRenderers });
 								}
+
+								GraphicsPlatform.RegisterGlobalService(SkiaGraphicsService.Instance);
 							})
 							.OnCreate((a) =>
 							{
