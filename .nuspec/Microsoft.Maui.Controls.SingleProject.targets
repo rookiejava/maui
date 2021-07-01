@@ -15,6 +15,9 @@
     <!-- Windows -->
     <EnableDefaultWindowsItems>false</EnableDefaultWindowsItems>
     <WindowsProjectFolder Condition=" '$(WindowsProjectFolder)' == '' ">$(PlatformsProjectFolder)\Windows\</WindowsProjectFolder>
+    <!-- Tizen -->
+    <EnableDefaultTizenItems>false</EnableDefaultTizenItems>
+    <TizenProjectFolder Condition=" '$(TizenProjectFolder)' == '' ">$(PlatformsProjectFolder)Tizen\</TizenProjectFolder>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(SingleProject)' == 'true' and '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'android' ">
@@ -42,9 +45,11 @@
     <EnableDefaultPageItems>False</EnableDefaultPageItems>
     <EnableDefaultApplicationDefinition>False</EnableDefaultApplicationDefinition>
     <_SingleProjectWindowsExcludes>$(WindowsProjectFolder)/**/.*/**</_SingleProjectWindowsExcludes>
-    <!-- Tizen -->
-    <TizenProjectFolder Condition=" '$(TizenProjectFolder)' == '' ">Tizen\</TizenProjectFolder>
-    <TizenManifestFile>$(TizenProjectFolder)tizen-manifest.xml</TizenManifestFile>
+  </PropertyGroup>
+
+  <!-- Tizen -->
+  <PropertyGroup Condition=" '$(SingleProject)' == 'true' and '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'tizen' ">
+    <TizenManifestFile Condition=" Exists('$(TizenProjectFolder)tizen-manifest.xml') ">$(TizenProjectFolder)tizen-manifest.xml</TizenManifestFile>
     <TizenResourcePrefix>$(TizenProjectFolder)res</TizenResourcePrefix>
   </PropertyGroup>
 
