@@ -152,18 +152,19 @@ namespace Microsoft.Maui.Controls.Hosting
 				events.AddTizen(tizen => tizen
 							.OnPreCreate((a) =>
 							{
-								// This just gets Forms Compat bits setup with what it needs
-								// to initialize the first view. MauiContext hasn't been initialized at this point
-								// so we setup one that will look exactly the same just
-								// to make legacy Forms bits happy
+								// This is the initial Init to set up any system services registered by
+								// Forms.Init(). This happens before any UI has appeared.
+								// This creates a dummy MauiContext.
+
 								var services = MauiApplication.Current.Services;
-								MauiContext mauiContext = new MauiContext(services, CoreUIAppContext.GetInstance(MauiApplication.Current));
-								ActivationState state = new ActivationState(mauiContext);
+								var mauiContext = new MauiContext(services, CoreUIAppContext.GetInstance(MauiApplication.Current));
+								var state = new ActivationState(mauiContext);
 								var options = services.GetService<InitializationOptions>();
 
 								if (options != null)
 								{
 									options.Context = options.Context ?? MauiApplication.Current;
+									options.Flags = InitializationFlags.SkipRenderers;
 									Forms.Init(state, options);
 
 									var unit = options.DisplayResolutionUnit;
@@ -196,24 +197,13 @@ namespace Microsoft.Maui.Controls.Hosting
 								{
 									Forms.Init(state, new InitializationOptions(MauiApplication.Current) { Flags = InitializationFlags.SkipRenderers });
 								}
-
-								GraphicsPlatform.RegisterGlobalService(SkiaGraphicsService.Instance);
 							})
-							.OnCreate((a) =>
+							.OnMauiContextCreated((mauiContext) =>
 							{
-								// This calls Init again so that the MauiContext that's part of
-								// Forms.Init matches the rest of the maui application
-								var mauiApp = MauiApplication.Current.Application;
-								if (mauiApp.Windows.Count > 0)
-								{
-									var window = mauiApp.Windows[0];
-									var mauiContext = window.Handler?.MauiContext ?? window.View.Handler?.MauiContext;
+								// This is the final Init that sets up the real context from the application.
 
-									if (mauiContext != null)
-									{
-										Forms.Init(new ActivationState(mauiContext));
-									}
-								}
+								var state = new ActivationState(mauiContext!);
+								Forms.Init(state);
 							}));
 #endif
 			});

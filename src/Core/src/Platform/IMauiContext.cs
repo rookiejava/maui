@@ -17,6 +17,7 @@ namespace Microsoft.Maui
 		UI.Xaml.Window? Window { get; }
 #elif TIZEN
 		CoreUIAppContext? Context { get; }
+		ElmSharp.Window? Window { get; }
 #endif
 	}
 

@@ -5,6 +5,8 @@ using NativeView = UIKit.UIWindow;
 using NativeView = Android.App.Activity;
 #elif WINDOWS
 using NativeView = Microsoft.UI.Xaml.Window;
+#elif TIZEN
+using NativeView = ElmSharp.Window;
 #endif
 
 namespace Microsoft.Maui.Handlers

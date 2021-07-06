@@ -484,6 +484,9 @@ namespace Microsoft.Maui.Controls.Compatibility
 			Device.Info = new Forms.TizenDeviceInfo();
 			Device.SetFlags(s_flags);
 
+			if (options?.Flags.HasFlag(InitializationFlags.SkipRenderers) != true)
+				RegisterCompatRenderers(options);
+
 			string profile = ((TizenDeviceInfo)Device.Info).Profile;
 			if (profile == "mobile")
 			{
@@ -521,6 +524,50 @@ namespace Microsoft.Maui.Controls.Compatibility
 				s_platformType = PlatformType.Lightweight;
 
 			IsInitialized = true;
+		}
+
+		internal static void RegisterCompatRenderers(InitializationOptions maybeOptions = null)
+		{
+			if (!IsInitializedRenderers)
+			{
+				IsInitializedRenderers = true;
+				if (maybeOptions != null)
+				{
+					var options = maybeOptions;
+					var handlers = options.Handlers;
+					var flags = options.Flags;
+					var effectScopes = options.EffectScopes;
+
+					//TODO: ExportCell?
+					//TODO: ExportFont
+
+					// renderers
+					Registrar.RegisterRenderers(handlers);
+
+					// effects
+					if (effectScopes != null)
+					{
+						for (var i = 0; i < effectScopes.Length; i++)
+						{
+							var effectScope = effectScopes[0];
+							Registrar.RegisterEffects(effectScope.Name, effectScope.Effects);
+						}
+					}
+
+					// css
+					Registrar.RegisterStylesheets(flags);
+				}
+				else
+				{
+					// Only need to do this once
+					Registrar.RegisterAll(new[] {
+						typeof(ExportRendererAttribute),
+						typeof(ExportCellAttribute),
+						typeof(ExportImageSourceHandlerAttribute),
+						typeof(ExportFontAttribute)
+					});
+				}
+			}
 		}
 
 		static void RegisterSkiaSharpRenderers()
