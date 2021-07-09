@@ -153,7 +153,7 @@ namespace Microsoft.Maui.Resizetizer
 			}
 			else if (PlatformType == "tizen")
 			{
-				var updator = new TizenIconManifestUpdator(appIconName, appIconDpis, this);
+				var updator = new TizenIconManifestUpdater(appIconName, appIconDpis, this);
 				updator.Update();
 			}
 
