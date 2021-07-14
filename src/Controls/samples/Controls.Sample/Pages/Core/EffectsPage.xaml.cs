@@ -135,5 +135,53 @@ namespace Maui.Controls.Sample.Pages
 			}
 		}
 	}
+#elif TIZEN
+	public class FocusPlatformEffect : PlatformEffect
+	{
+		ElmSharp.Color backgroundColor;
+
+		protected override void OnAttached()
+		{
+			try
+			{
+				(Control as ElmSharp.Widget).BackgroundColor = backgroundColor = ElmSharp.Color.FromRgb(204, 153, 255);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Cannot set property on attached control. Error: ", ex.Message);
+			}
+		}
+
+		protected override void OnDetached()
+		{
+		}
+
+		protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)
+		{
+			base.OnElementPropertyChanged(args);
+
+			try
+			{
+				if (args.PropertyName == "IsFocused")
+				{
+					if (Control is ElmSharp.Widget widget)
+					{
+						if (widget.BackgroundColor == backgroundColor)
+						{
+							widget.BackgroundColor = ElmSharp.Color.White;
+						}
+						else
+						{
+							widget.BackgroundColor = backgroundColor;
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Cannot set property on attached control. Error: ", ex.Message);
+			}
+		}
+	}
 #endif
 }
