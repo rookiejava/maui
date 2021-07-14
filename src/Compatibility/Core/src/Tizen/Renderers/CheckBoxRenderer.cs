@@ -1,5 +1,6 @@
 using System;
 using ElmSharp;
+using Microsoft.Maui.Controls.Platform;
 using EColor = ElmSharp.Color;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
@@ -46,10 +47,10 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateOnColor(bool initialize)
 		{
-			if (initialize && Element.Color.IsDefault)
+			if (initialize && Element.Color == null)
 				return;
 
-			if (Element.Color.IsDefault)
+			if (Element.Color == null)
 			{
 				Control.DeleteOnColors();
 			}

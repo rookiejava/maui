@@ -1,5 +1,4 @@
-using ElmSharp;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
+using Microsoft.Maui.Controls.Platform;
 using ELayout = ElmSharp.Layout;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen

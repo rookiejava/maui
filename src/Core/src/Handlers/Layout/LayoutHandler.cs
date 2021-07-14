@@ -7,9 +7,13 @@ namespace Microsoft.Maui.Handlers
 {
 	public partial class LayoutHandler : ILayoutHandler
 	{
-		public static PropertyMapper<ILayout> LayoutMapper = new PropertyMapper<ILayout>(ViewHandler.ViewMapper)
+		public static PropertyMapper<ILayout, LayoutHandler> LayoutMapper = new PropertyMapper<ILayout, LayoutHandler>(ViewHandler.ViewMapper)
 		{
+#if TIZEN || __TIZEN__
+			[nameof(ILabel.Background)] = MapBackground,
+#endif
 		};
+
 
 		public LayoutHandler() : base(LayoutMapper)
 		{

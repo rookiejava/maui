@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Maui.Animations;
 
 namespace Microsoft.Maui
 {
@@ -14,6 +15,15 @@ namespace Microsoft.Maui
 		UIKit.UIWindow? Window { get; }
 #elif WINDOWS
 		UI.Xaml.Window? Window { get; }
+#elif TIZEN
+		CoreUIAppContext? Context { get; }
+		ElmSharp.Window? Window { get; }
 #endif
+	}
+
+	// TODO: This will be replaced with scoped services
+	internal interface IScopedMauiContext : IMauiContext
+	{
+		IAnimationManager AnimationManager { get; }
 	}
 }

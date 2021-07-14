@@ -45,14 +45,21 @@ namespace Maui.Controls.Sample
 #elif WINDOWS
 					handlers.AddCompatibilityRenderer(typeof(CustomButton),
 						typeof(Microsoft.Maui.Controls.Compatibility.Platform.UWP.ButtonRenderer));
+#elif TIZEN
+					handlers.AddCompatibilityRenderer(typeof(CustomButton),
+						typeof(Microsoft.Maui.Controls.Compatibility.Platform.Tizen.ButtonRenderer));
 #endif
 				});
 
 
 			// Use a "third party" library that brings in a massive amount of controls
 			appBuilder.UseBordelessEntry();
+			appBuilder.ConfigureEffects(builder =>
+			{
+				builder.Add<FocusRoutingEffect, FocusPlatformEffect>();
+			});
 
-#if DEBUG && !WINDOWS
+#if DEBUG && !WINDOWS && !TIZEN
 			appBuilder.EnableHotReload();
 #endif
 
@@ -78,12 +85,22 @@ namespace Maui.Controls.Sample
 				{
 					services.AddLogging(logging =>
 					{
-#if WINDOWS
+#if WINDOWS || TIZEN
 						logging.AddDebug();
 #else
 						logging.AddConsole();
 #endif
 					});
+#if TIZEN
+					services.AddTransient((_) => {
+						var option = new InitializationOptions
+						{
+							DisplayResolutionUnit = DisplayResolutionUnit.DP(true),
+							UseSkiaSharp = true
+						};
+						return option;
+					});
+#endif
 
 					services.AddSingleton<ITextService, TextService>();
 					services.AddTransient<MainViewModel>();
@@ -209,6 +226,19 @@ namespace Maui.Controls.Sample
 						.OnClosed((a, b) => LogEvent(nameof(WindowsLifecycle.OnClosed)))
 						.OnLaunched((a, b) => LogEvent(nameof(WindowsLifecycle.OnLaunched)))
 						.OnVisibilityChanged((a, b) => LogEvent(nameof(WindowsLifecycle.OnVisibilityChanged))));
+#elif TIZEN
+					events.AddTizen(tizen => tizen
+						.OnAppControlReceived((a, b) => LogEvent(nameof(TizenLifecycle.OnAppControlReceived)))
+						.OnCreate((a) => LogEvent(nameof(TizenLifecycle.OnCreate)))
+						.OnDeviceOrientationChanged((a, b) => LogEvent(nameof(TizenLifecycle.OnDeviceOrientationChanged)))
+						.OnLocaleChanged((a, b) => LogEvent(nameof(TizenLifecycle.OnLocaleChanged)))
+						.OnLowBattery((a, b) => LogEvent(nameof(TizenLifecycle.OnLowBattery)))
+						.OnLowMemory((a, b) => LogEvent(nameof(TizenLifecycle.OnLowMemory)))
+						.OnPause((a) => LogEvent(nameof(TizenLifecycle.OnPause)))
+						.OnPreCreate((a) => LogEvent(nameof(TizenLifecycle.OnPreCreate)))
+						.OnRegionFormatChanged((a, b) => LogEvent(nameof(TizenLifecycle.OnRegionFormatChanged)))
+						.OnResume((a) => LogEvent(nameof(TizenLifecycle.OnResume)))
+						.OnTerminate((a) => LogEvent(nameof(TizenLifecycle.OnTerminate))));
 #endif
 
 					static bool LogEvent(string eventName, string type = null)

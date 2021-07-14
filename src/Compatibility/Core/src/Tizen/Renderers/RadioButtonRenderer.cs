@@ -1,5 +1,6 @@
 using System;
 using ElmSharp;
+using Microsoft.Maui.Controls.Platform;
 using ESize = ElmSharp.Size;
 using TSpan = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native.Span;
 
@@ -41,7 +42,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 			base.Dispose(disposing);
 		}
 
-		protected override Size MinimumSize()
+		protected override Graphics.Size MinimumSize()
 		{
 			return Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP();
 		}

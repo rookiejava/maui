@@ -8,6 +8,7 @@
     <AndroidRoot>Android\</AndroidRoot>
     <iOSRoot>iOS\</iOSRoot>
     <WindowsRoot>WinUI\</WindowsRoot>
+    <TizenRoot>Tizen\</TizenRoot>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Microsoft.Maui.Controls.Compatibility</PackageId>
@@ -57,6 +58,15 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
     <Compile Include="*.iOS.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
+    <Compile Include="$(TizenRoot)**\*.cs"></Compile>
+    <EmbeddedResource Include="$(TizenRoot)Resources\*.resx" />
+    <EmbeddedResource Include="$(TizenRoot)Resources\*.png" />
+
+    <Compile Remove="$(TizenRoot)bin\**\*.cs" />
+    <Compile Remove="$(TizenRoot)obj\**\*.cs" />
+    <Compile Include="*.Tizen.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -35,6 +35,11 @@ namespace Maui.Controls.Sample.Controls
 		{
 
 		}
+#elif TIZEN
+		public static void MapBorder(BordelessEntryHandler handler, BordelessEntry borderlessEntry)
+		{
+
+		}
 #endif
 	}
 }

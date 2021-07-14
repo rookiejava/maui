@@ -4,13 +4,17 @@ using System.ComponentModel;
 using System.Linq;
 using ElmSharp;
 using ElmSharp.Accessible;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Platform;
+using Microsoft.Maui.Controls.Internals;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native;
+using Size = Microsoft.Maui.Graphics.Size;
+using Rectangle = Microsoft.Maui.Graphics.Rectangle;
+using Point = Microsoft.Maui.Graphics.Point;
 using EFocusDirection = ElmSharp.FocusDirection;
 using ERect = ElmSharp.Rect;
 using ESize = ElmSharp.Size;
-using Specific = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.VisualElement;
-using XFocusDirection = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.FocusDirection;
+using Specific = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.VisualElement;
+using XFocusDirection = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.FocusDirection;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {
@@ -89,7 +93,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 			Dispose(false);
 		}
 
-		event EventHandler<VisualElementChangedEventArgs> ElementChanged
+		event EventHandler<VisualElementChangedEventArgs> IVisualElementRenderer.ElementChanged
 		{
 			add
 			{
@@ -119,6 +123,8 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 		}
 
 		public EvasObject NativeView { get; private set; }
+
+		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
 
 		protected bool IsDisposed => _flags.HasFlag(VisualElementRendererFlags.Disposed);
 
@@ -338,6 +344,12 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 				}
 			}
 
+			var args = new VisualElementChangedEventArgs(e.OldElement, e.NewElement);
+			for (var i = 0; i < _elementChangedHandlers.Count; i++)
+				_elementChangedHandlers[i](this, args);
+
+			ElementChanged?.Invoke(this, e);
+
 			if (null != e.NewElement)
 			{
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
@@ -526,7 +538,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateNativeGeometry()
 		{
-			var updatedGeometry = new Rectangle(ComputeAbsolutePoint(Element), new Size(Element.Width, Element.Height)).ToPixel();
+			var updatedGeometry = new Rectangle(ComputeAbsolutePoint(Element), new Size(Element.Width, Element.Height)).ToEFLPixel();
 
 			if (NativeView.Geometry != updatedGeometry)
 			{
@@ -644,12 +656,12 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		protected virtual void UpdateBackgroundColor(bool initialize)
 		{
-			if (initialize && Element.BackgroundColor.IsDefault)
+			if (initialize && Element.BackgroundColor == null)
 				return;
 
 			if (NativeView is Widget)
 			{
-				(NativeView as Widget).BackgroundColor = Element.BackgroundColor.ToNative();
+				(NativeView as Widget).BackgroundColor = Element.BackgroundColor.ToNativeEFL();
 			}
 			else
 			{
@@ -702,15 +714,23 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 		static double ComputeAbsoluteX(VisualElement e)
 		{
 			var parentX = 0.0;
-			if (e.RealParent is VisualElement ve)
+			if (e.RealParent is VisualElement parent)
 			{
 				if (CompressedLayout.GetIsHeadless(e.RealParent))
 				{
-					parentX = ComputeAbsoluteX(ve);
+					parentX = ComputeAbsoluteX(parent);
 				}
 				else
 				{
-					parentX = Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().X);
+					if (parent.Handler is INativeViewHandler nativeHandler)
+					{
+
+						parentX = nativeHandler.GetNativeContentGeometry().X.ToScaledDP();
+					}
+					else
+					{
+						parentX = Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().X);
+					}
 				}
 			}
 			return e.X + parentX;
@@ -719,15 +739,22 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 		static double ComputeAbsoluteY(VisualElement e)
 		{
 			var parentY = 0.0;
-			if (e.RealParent is VisualElement ve)
+			if (e.RealParent is VisualElement parent)
 			{
 				if (CompressedLayout.GetIsHeadless(e.RealParent))
 				{
-					parentY = ComputeAbsoluteY(ve);
+					parentY = ComputeAbsoluteY(parent);
 				}
 				else
 				{
-					parentY = Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().Y);
+					if (parent.Handler is INativeViewHandler nativeHandler)
+					{
+						parentY = nativeHandler.GetNativeContentGeometry().Y.ToScaledDP();
+					}
+					else
+					{
+						parentY = Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().Y);
+					}
 				}
 			}
 			return e.Y + parentY;
@@ -875,8 +902,8 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 		/// <param name="effect">The effect to register.</param>
 		void OnRegisterEffect(PlatformEffect effect)
 		{
-			effect.SetContainer(Element.Parent == null ? null : Platform.GetRenderer(Element.Parent)?.NativeView);
-			effect.SetControl(NativeView);
+			effect.Container = Element.Parent == null ? null : Platform.GetRenderer(Element.Parent)?.NativeView;
+			effect.Control = NativeView;
 		}
 
 		void OnMoved(object sender, EventArgs e)

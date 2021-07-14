@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using ElmSharp;
+using Microsoft.Maui.Controls.Platform;
 using EBox = ElmSharp.Box;
 using ELayout = ElmSharp.Layout;
 using ERect = ElmSharp.Rect;
 using ESize = ElmSharp.Size;
+using Index = ElmSharp.Index;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {

@@ -12,6 +12,11 @@ using static Microsoft.Maui.Controls.Compatibility.Platform.iOS.Platform;
 using NativeView = UIKit.UIView;
 using Microsoft.Maui.Controls.Compatibility.Platform.iOS;
 using ViewHandler = Microsoft.Maui.Handlers.ViewHandler<Microsoft.Maui.IView, UIKit.UIView>;
+#elif TIZEN
+using static Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Platform;
+using NativeView = ElmSharp.EvasObject;
+using Microsoft.Maui.Controls.Compatibility.Platform.Tizen;
+using ViewHandler = Microsoft.Maui.Handlers.ViewHandler<Microsoft.Maui.IView, ElmSharp.EvasObject>;
 #elif NETSTANDARD
 using NativeView = System.Object;
 using ViewHandler = Microsoft.Maui.Handlers.ViewHandler<Microsoft.Maui.IView, System.Object>;
@@ -54,7 +59,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 		{
 		}
 
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || TIZEN
 		internal IVisualElementRenderer? VisualElementRenderer { get; private set; }
 		new IView? VirtualView => (this as IViewHandler).VirtualView;
 

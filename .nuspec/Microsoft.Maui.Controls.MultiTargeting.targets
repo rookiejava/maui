@@ -23,6 +23,12 @@
     <Compile Remove="**\Android\**\*.cs" />
     <None Include="**\Android\**\*.cs" />
   </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('tizen')) != true AND $(TargetFramework.StartsWith('net6.0-tizen')) != true ">
+    <Compile Remove="**\**\*.Tizen.cs" />
+    <None Include="**\**\*.Tizen.cs" />
+    <Compile Remove="**\Tizen\**\*.cs" />
+    <None Include="**\Tizen\**\*.cs" />
+  </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) != true ">
     <Compile Remove="**\*.Standard.cs" />
     <None Include="**\*.Standard.cs" />
@@ -82,6 +88,11 @@
     <DefineConstants>$(DefineConstants);MACCATALYST;IOS</DefineConstants>
   </PropertyGroup>
 
+ <!-- Tizen  -->
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0-tizen'">
+    <DefineConstants>$(DefineConstants);TIZEN</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -110,5 +121,8 @@
     <PackageReference Include="Microsoft.ProjectReunion.InteractiveExperiences" NoWarn="NU1701" />
     <PackageReference Include="Microsoft.Graphics.Win2D" />
     <PackageReference Include="Microsoft.Maui.Graphics.Win2D.WinUI.Desktop" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('tizen')) == true OR '$(TargetFramework)' == 'net6.0-tizen'">
+    <PackageReference Include="Tizen.UIExtensions.ElmSharp" Version="0.3.0-pre1" />
   </ItemGroup>
 </Project>

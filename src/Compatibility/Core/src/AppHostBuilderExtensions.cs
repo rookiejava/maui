@@ -36,6 +36,15 @@ using TabbedPageRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.Ta
 using FlyoutPageRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.PhoneFlyoutPageRenderer;
 using RadioButtonRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.Platform.DefaultRenderer;
 using DefaultRenderer = Microsoft.Maui.Controls.Compatibility.Platform.iOS.Platform.DefaultRenderer;
+#elif TIZEN
+using Microsoft.Maui.Controls.Compatibility.Platform.Tizen;
+using Microsoft.Maui.Graphics.Skia;
+using BoxRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.BoxViewRenderer;
+using CollectionViewRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.StructuredItemsViewRenderer;
+using OpenGLViewRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.DefaultRenderer;
+using StreamImagesourceHandler = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.StreamImageSourceHandler;
+using ImageLoaderSourceHandler = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.UriImageSourceHandler;
+using DefaultRenderer = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.DefaultRenderer;
 #endif
 
 namespace Microsoft.Maui.Controls.Hosting
@@ -139,6 +148,63 @@ namespace Microsoft.Maui.Controls.Hosting
 						var state = new ActivationState(mauiContext);
 						Forms.Init(state);
 					}));
+#elif TIZEN
+				events.AddTizen(tizen => tizen
+							.OnPreCreate((a) =>
+							{
+								// This is the initial Init to set up any system services registered by
+								// Forms.Init(). This happens before any UI has appeared.
+								// This creates a dummy MauiContext.
+
+								var services = MauiApplication.Current.Services;
+								var mauiContext = new MauiContext(services, CoreUIAppContext.GetInstance(MauiApplication.Current));
+								var state = new ActivationState(mauiContext);
+								var options = services.GetService<InitializationOptions>();
+
+								if (options != null)
+								{
+									options.Context = options.Context ?? MauiApplication.Current;
+									options.Flags = InitializationFlags.SkipRenderers;
+									Forms.Init(state, options);
+
+									var unit = options.DisplayResolutionUnit;
+									if (unit != null)
+									{
+										if (unit.UseDP)
+										{
+											mauiContext!.Context!.DisplayResolutionUnit = unit.UseDeviceScale ? Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.DeviceScaledDP : Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.DP;
+										}
+										else if (unit.UseVP)
+										{
+											mauiContext!.Context!.DisplayResolutionUnit = Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.VP;
+											mauiContext!.Context!.ViewportWidth = unit.ViewportWidth;
+										}
+										else
+										{
+											mauiContext!.Context!.DisplayResolutionUnit = unit.UseDeviceScale ? Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.DeviceScaledPixel : Tizen.UIExtensions.ElmSharp.DisplayResolutionUnit.Pixel;
+										}
+									}
+
+									if (options.UseSkiaSharp)
+									{
+										var handlersCollection = services.GetRequiredService<IMauiHandlersServiceProvider>().GetCollection();
+
+										handlersCollection.TryAddCompatibilityRenderer(typeof(Frame),
+											typeof(Microsoft.Maui.Controls.Compatibility.Platform.Tizen.SkiaSharp.FrameRenderer));
+									}
+								}
+								else
+								{
+									Forms.Init(state, new InitializationOptions(MauiApplication.Current) { Flags = InitializationFlags.SkipRenderers });
+								}
+							})
+							.OnMauiContextCreated((mauiContext) =>
+							{
+								// This is the final Init that sets up the real context from the application.
+
+								var state = new ActivationState(mauiContext!);
+								Forms.Init(state);
+							}));
 #endif
 			});
 
@@ -148,7 +214,7 @@ namespace Microsoft.Maui.Controls.Hosting
 					handlers.AddMauiControlsHandlers();
 					DependencyService.SetToInitialized();
 
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || TIZEN
 
 					handlers.TryAddCompatibilityRenderer(typeof(BoxView), typeof(BoxRenderer));
 					handlers.TryAddCompatibilityRenderer(typeof(Entry), typeof(EntryRenderer));
@@ -221,7 +287,9 @@ namespace Microsoft.Maui.Controls.Hosting
 					Internals.Registrar.Registered.Register(typeof(FileImageSource), typeof(FileImageSourceHandler));
 					Internals.Registrar.Registered.Register(typeof(StreamImageSource), typeof(StreamImagesourceHandler));
 					Internals.Registrar.Registered.Register(typeof(UriImageSource), typeof(ImageLoaderSourceHandler));
+#if !TIZEN
 					Internals.Registrar.Registered.Register(typeof(FontImageSource), typeof(FontImageSourceHandler));
+#endif
 
 
 					Internals.Registrar.Registered.Register(typeof(Microsoft.Maui.EmbeddedFont), typeof(Microsoft.Maui.EmbeddedFontLoader));
@@ -241,7 +309,7 @@ namespace Microsoft.Maui.Controls.Hosting
 		{
 			public void Configure(HostBuilderContext context, IServiceProvider services)
 			{
-#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST
+#if __ANDROID__ || __IOS__ || WINDOWS || MACCATALYST || TIZEN
 				CompatServiceProvider.SetServiceProvider(services);
 #endif
 

@@ -1,3 +1,4 @@
+using Microsoft.Maui.Controls.Platform;
 using EColor = ElmSharp.Color;
 using EProgressBar = ElmSharp.ProgressBar;
 
@@ -28,10 +29,10 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateColor(bool initialize)
 		{
-			if (initialize && Element.Color.IsDefault)
+			if (initialize && Element.Color == null)
 				return;
 
-			Control.Color = (Element.Color == Color.Default) ? s_defaultColor : Element.Color.ToNative();
+			Control.Color = (Element.Color == null) ? s_defaultColor : Element.Color.ToNative();
 		}
 
 		void UpdateIsRunning()

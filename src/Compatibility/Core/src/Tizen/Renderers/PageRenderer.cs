@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using ElmSharp.Wearable;
 using SkiaSharp.Views.Tizen;
+using Microsoft.Maui.Controls.Platform;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native.Watch;
 using EColor = ElmSharp.Color;
 
@@ -102,11 +103,11 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		protected override void UpdateBackgroundColor(bool initialize)
 		{
-			if (initialize && Element.BackgroundColor.IsDefault)
+			if (initialize && Element.BackgroundColor == null)
 				return;
 
 			// base.UpdateBackgroundColor() is not called on purpose, we don't want the regular background setting
-			if (Element.BackgroundColor.IsDefault || Element.BackgroundColor.A == 0)
+			if (Element.BackgroundColor == null || Element.BackgroundColor.Alpha == 0)
 				_page.Color = EColor.Transparent;
 			else
 				_page.Color = Element.BackgroundColor.ToNative();

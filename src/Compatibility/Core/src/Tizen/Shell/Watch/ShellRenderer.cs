@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ElmSharp;
+using Microsoft.Maui.Controls.Platform;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Watch
 {
@@ -185,7 +186,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Watch
 
 		void UpdateFlyoutBackgroundColor(bool init)
 		{
-			if (init && Element.FlyoutBackgroundColor.IsDefault)
+			if (init && Element.FlyoutBackgroundColor.IsDefault())
 				return;
 
 			if (_navigationView != null)

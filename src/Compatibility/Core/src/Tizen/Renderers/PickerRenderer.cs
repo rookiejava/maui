@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using ElmSharp;
+using Microsoft.Maui.Controls.Platform;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native.Watch;
 using EEntry = ElmSharp.Entry;
+using NIEntry = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native.IEntry;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {
@@ -31,7 +33,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 			{
 				if (Control != null)
 				{
-					if (Control is IEntry ie)
+					if (Control is NIEntry ie)
 					{
 						ie.TextBlockFocused -= OnTextBlockFocused;
 						ie.EntryLayoutFocused -= OnFocused;
@@ -54,7 +56,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 			{
 				var entry = CreateNativeControl();
 				entry.SetVerticalTextAlignment(0.5);
-				if (entry is IEntry ie)
+				if (entry is NIEntry ie)
 				{
 					ie.TextBlockFocused += OnTextBlockFocused;
 					ie.EntryLayoutFocused += OnFocused;
@@ -90,23 +92,23 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		protected virtual void UpdateTitleColor()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
-				ie.PlaceholderColor = Element.TitleColor.ToNative();
+				ie.PlaceholderColor = Element.TitleColor.ToNativeEFL();
 			}
 		}
 
 		protected virtual void UpdateTextColor()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
-				ie.TextColor = Element.TextColor.ToNative();
+				ie.TextColor = Element.TextColor.ToNativeEFL();
 			}
 		}
 
 		void UpdateFontSize()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.FontSize = Element.FontSize;
 			}
@@ -114,7 +116,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateFontFamily()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.FontFamily = Element.FontFamily;
 			}
@@ -122,7 +124,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateFontAttributes()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.FontAttributes = Element.FontAttributes;
 			}
@@ -130,7 +132,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateTitle()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.Placeholder = Element.Title;
 			}
@@ -138,7 +140,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateHorizontalTextAlignment()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.HorizontalTextAlignment = Element.HorizontalTextAlignment.ToNative();
 			}
@@ -146,7 +148,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void OnLayoutFocused(object sender, EventArgs e)
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.FontSize = ie.FontSize * 1.5;
 			}
@@ -154,7 +156,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void OnLayoutUnfocused(object sender, EventArgs e)
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.FontSize = ie.FontSize / 1.5;
 			}
@@ -178,7 +180,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 				_dialog.AlignmentX = -1;
 				_dialog.AlignmentY = -1;
 				_dialog.Title = Element.Title;
-				_dialog.TitleColor = Element.TitleColor.ToNative();
+				_dialog.TitleColor = Element.TitleColor.ToNativeEFL();
 				_dialog.Dismissed += OnDialogDismissed;
 				_dialog.BackButtonPressed += (object senders, EventArgs es) =>
 				{
