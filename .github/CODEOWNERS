@@ -1,7 +1,7 @@
 # Tizen
-**/Tizen @Samsung/dotnet-maui-tizen-eng
-*.tizen.cs @Samsung/dotnet-maui-tizen-eng
-*.Tizen.cs @Samsung/dotnet-maui-tizen-eng
+**/Tizen @rookiejava @myroot @shyunmin @sung-su @JoonghyunCho
+*.tizen.cs @rookiejava @myroot @shyunmin @sung-su @JoonghyunCho
+*.Tizen.cs @rookiejava @myroot @shyunmin @sung-su @JoonghyunCho
 
 # GTK
 /Xamarin.Forms.ControlGallery.GTK/ @jsuarezruiz
