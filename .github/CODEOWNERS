@@ -1,5 +1,6 @@
 # Tizen
 **/Tizen @rookiejava
+*.tizen.cs @rookiejava
 *.Tizen.cs @rookiejava
 
 # GTK
